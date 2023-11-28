@@ -5,12 +5,11 @@
 
 #include "frekvens-driver.h"
 
-
 namespace esphome {
 namespace frekvenspanel {
 
-class Panel : public PollingComponent,
-                public display::DisplayBuffer {
+class Panel : public PollingComponent, public display::DisplayBuffer {
+
  public:
   int p_latch;
   int p_clock;
@@ -37,6 +36,8 @@ class Panel : public PollingComponent,
   void setup() override {
     this->initialize();
   }
+  
+  display::DisplayType get_display_type() override { return display::DisplayType::DISPLAY_TYPE_BINARY; }
 
  protected:
   void draw_absolute_pixel_internal(int x, int y, Color color) override;
