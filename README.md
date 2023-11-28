@@ -24,17 +24,18 @@ esphome:
   board: d1_mini
   platformio_options:
     upload_speed: 115200
+    lib_ldf_mode: deep
     lib_deps:
       - me-no-dev/ESPAsyncTCP
       - adafruit/Adafruit GFX Library   # Required for FrekvensPanel.
-      - Adafruit BusIO                  # Required by GFX Library.
+      - adafruit/Adafruit BusIO         # Required for FrekvensPanel.
       - Wire                            # Also required by GFX.
       - SPI                             # Also required by GFX.
 
 external_components:
   - source:
       type: local
-      path: <path of directory containing frekvens_panel>
+      path: components
 
 light:
   - platform: monochromatic
@@ -53,7 +54,7 @@ output:
 time:
   - platform: sntp
     id: ntp_time
-    timezone: 'Europe/Paris'
+    timezone: 'Europe/Berlin'
 
 font:
   - file: "04B03.ttf"
@@ -62,13 +63,30 @@ font:
 
 display:
   - platform: frekvens_panel
-    latch_pin: 12
-    clock_pin: 04
-    data_pin: 05
+    latch_pin: 00
+    clock_pin: 13
+    data_pin: 12
 
     lambda: |-
       auto time = id(ntp_time).now();
       it.printf(0, 0, id(b03), "%d:%d", time.hour, time.minute);
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "PMSH8ffFaImAL3xxxxsNlv8yQmYkBE="
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esphome-Web-162032"
+    password: "vNaeFgw54QJw"
 
 ```
 
