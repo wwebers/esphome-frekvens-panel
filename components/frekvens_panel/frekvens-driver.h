@@ -8,8 +8,8 @@
 #include <Arduino.h>
 #include <Adafruit_GFX.h>
 
-class FrekvensPanel : public Adafruit_GFX
-{
+class FrekvensPanel : public Adafruit_GFX {
+
 private:
     unsigned short _numPanels : 4;
     unsigned short _numPages : 4;
@@ -28,8 +28,7 @@ private:
     unsigned short _height;
 
 public:
-    FrekvensPanel(int p_latch, int p_clock, int p_data, int bitDepth,
-                  int numPanels);
+    FrekvensPanel(int p_latch, int p_clock, int p_data, int bitDepth, int numPanels);
     FrekvensPanel(int p_latch, int p_clock, int p_data);
 
     void init(int p_latch, int p_clock, int p_data, int bitDepth, int numPanels);
