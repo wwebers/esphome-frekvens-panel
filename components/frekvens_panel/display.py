@@ -6,6 +6,7 @@ from esphome.const import (
     CONF_LAMBDA,
     CONF_PAGES,
     CONF_CONTRAST,
+    __version__ as ESPHOME_VERSION
 )
 
 DEPENDENCIES = []
@@ -15,9 +16,15 @@ CONF_CLOCK_PIN = 'clock_pin'
 CONF_DATA_PIN = 'data_pin'
 
 frekvenspanel_ns = cg.esphome_ns.namespace("frekvenspanel")
-Panel = frekvenspanel_ns.class_(
-    "Panel", cg.PollingComponent, display.DisplayBuffer
-)
+
+if cv.Version.parse(ESPHOME_VERSION) < cv.Version.parse("2023.12.0"):
+    Panel = frekvenspanel_ns.class_(
+        "Panel", cg.PollingComponent, display.DisplayBuffer
+    )
+else:
+    Panel = frekvenspanel_ns.class_(
+        "Panel", cg.PollingComponent, display.Display
+    )
 
 CONFIG_SCHEMA = cv.All(
     display.FULL_DISPLAY_SCHEMA.extend(
@@ -36,7 +43,8 @@ CONFIG_SCHEMA = cv.All(
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
 
-    await cg.register_component(var, config)
+    if cv.Version.parse(ESPHOME_VERSION) < cv.Version.parse("2023.12.0"):
+        await cg.register_component(var, config)
     await display.register_display(var, config)
 
     cg.add(var.set_pins(
@@ -46,7 +54,12 @@ async def to_code(config):
     ))
 
     if CONF_LAMBDA in config:
+        if cv.Version.parse(ESPHOME_VERSION) < cv.Version.parse("2023.7.0"):
+            displayRef = display.DisplayBufferRef
+        else:
+            displayRef = display.DisplayRef
+
         lambda_ = await cg.process_lambda(
-            config[CONF_LAMBDA], [(display.DisplayRef, "it")], return_type=cg.void
+            config[CONF_LAMBDA], [(displayRef, "it")], return_type=cg.void
         )
         cg.add(var.set_writer(lambda_))

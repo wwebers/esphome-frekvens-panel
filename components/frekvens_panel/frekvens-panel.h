@@ -1,15 +1,20 @@
 #pragma once
 
-#include "esphome/core/component.h"
+#include "esphome/core/defines.h"
+#include "esphome/core/version.h"
 #include "esphome/components/display/display_buffer.h"
+#include "esphome/core/component.h"
 
 #include "frekvens-driver.h"
 
 namespace esphome {
 namespace frekvenspanel {
 
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2023, 12, 0)
+class Panel : public display::DisplayBuffer {
+#else
 class Panel : public PollingComponent, public display::DisplayBuffer {
-
+#endif
  public:
   int p_latch;
   int p_clock;
